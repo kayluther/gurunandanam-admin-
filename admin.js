@@ -16,23 +16,35 @@ const db = getFirestore(app);
 
 const addForm = document.getElementById('addItemForm');
 const adminProductList = document.getElementById('admin-product-list');
+const adminSearchInput = document.getElementById('adminSearchInput'); 
+
+let allAdminProducts = []; 
 
 async function loadAdminProducts() {
     const querySnapshot = await getDocs(collection(db, "products"));
-    let products = [];
+    allAdminProducts = [];
+    
     querySnapshot.forEach((doc) => {
-        products.push({ id: doc.id, ...doc.data() });
+        allAdminProducts.push({ id: doc.id, ...doc.data() });
     });
 
-    // Sort alphabetically
-    products.sort((a, b) => a.name.localeCompare(b.name));
+    allAdminProducts.sort((a, b) => a.name.localeCompare(b.name));
     
+    const currentSearchTerm = adminSearchInput.value.toLowerCase();
+    const filteredProducts = allAdminProducts.filter(p => p.name.toLowerCase().includes(currentSearchTerm));
+    
+    displayAdminProducts(filteredProducts);
+}
+
+function displayAdminProducts(productsToDisplay) {
     adminProductList.innerHTML = '';
-    if(products.length === 0) {
-        adminProductList.innerHTML = "<li>No items in inventory. Add some above!</li>";
+    
+    if(productsToDisplay.length === 0) {
+        adminProductList.innerHTML = "<li>No items match your search.</li>";
+        return;
     }
 
-    products.forEach((data) => {
+    productsToDisplay.forEach((data) => {
         const li = document.createElement('li');
         const formattedPrice = data.price.toLocaleString('en-IN');
         li.innerHTML = `
@@ -57,13 +69,19 @@ async function loadAdminProducts() {
     });
 }
 
+adminSearchInput.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allAdminProducts.filter(p => p.name.toLowerCase().includes(term));
+    displayAdminProducts(filtered);
+});
+
 addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('itemName').value;
     const price = document.getElementById('itemPrice').value;
     const submitBtn = addForm.querySelector('button');
     
-    submitBtn.innerText = "Adding to inventory...";
+    submitBtn.innerText = "Adding...";
     submitBtn.style.opacity = "0.7";
 
     try {
@@ -73,6 +91,7 @@ addForm.addEventListener('submit', async (e) => {
         });
         addForm.reset();
         document.getElementById('itemName').focus();
+        adminSearchInput.value = ''; 
         loadAdminProducts();
     } catch (error) {
         console.error("Error adding document: ", error);
