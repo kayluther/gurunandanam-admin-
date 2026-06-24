@@ -11,15 +11,16 @@
     <header class="admin-header">
         <div class="admin-header-content">
             <h1>⚙️ Store Admin Panel</h1>
+            <!-- Link to your public store -->
             <a href="https://kayluther.github.io/gurunandanam-stores/" target="_blank" class="btn-view-store">View Live Store</a>
         </div>
     </header>
 
     <main class="admin-main">
         <div class="admin-grid">
-            <!-- Add Item Form -->
+            <!-- Add / Edit Item Form -->
             <div class="admin-card">
-                <h2>Add New Item</h2>
+                <h2 id="formTitle">Add New Item</h2>
                 <form id="addItemForm">
                     <div class="input-group">
                         <label for="itemName">Product Name</label>
@@ -29,7 +30,9 @@
                         <label for="itemPrice">Price (₹)</label>
                         <input type="number" id="itemPrice" placeholder="e.g., 250" required>
                     </div>
-                    <button type="submit" class="btn-primary">Add to Inventory</button>
+                    <button type="submit" id="submitBtn" class="btn-primary">Add to Inventory</button>
+                    <!-- Cancel Edit Button (Hidden by default) -->
+                    <button type="button" id="cancelEditBtn" class="btn-secondary" style="display: none; margin-top: 10px;">Cancel Edit</button>
                 </form>
             </div>
 
@@ -37,13 +40,14 @@
             <div class="admin-card">
                 <h2>Current Inventory</h2>
                 
+                <!-- Search Bar -->
                 <div class="admin-search-container">
-                    <input type="text" id="adminSearchInput" placeholder="🔍 Search inventory to remove..." class="admin-search-input">
+                    <input type="text" id="adminSearchInput" placeholder="🔍 Search inventory to edit or remove..." class="admin-search-input">
                 </div>
 
                 <div class="inventory-header">
                     <span>Product</span>
-                    <span>Action</span>
+                    <span>Actions</span>
                 </div>
                 <ul id="admin-product-list" class="admin-list">
                     <li class="loading">Loading inventory...</li>
